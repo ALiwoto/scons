@@ -47,6 +47,9 @@ import threading
 
 import SCons.CacheDir
 import SCons.Debug
+# wgodot-changes::begin
+import SCons.Diagnostics
+# wgodot-changes::end
 import SCons.Defaults
 import SCons.Environment
 import SCons.Errors
@@ -931,6 +934,9 @@ def path_string(label, module) -> str:
     path = module.__path__
     return "\t%s path: %s\n"%(label,path)
 
+# wgodot-changes::begin
+@SCons.Diagnostics.measure
+# wgodot-changes::end
 def _main(parser):
     global exit_status
     global this_build_status
@@ -1227,6 +1233,9 @@ def _main(parser):
             print('Found nothing to build')
             exit_status = 2
 
+# wgodot-changes::begin
+@SCons.Diagnostics.measure
+# wgodot-changes::end
 def _build_targets(fs, options, targets, target_top):
 
     global this_build_status
@@ -1586,5 +1595,10 @@ def main() -> None:
 
     if ENABLE_JSON:
         write_scons_stats_file()
+
+    # wgodot-changes::begin
+    if SCons.Diagnostics.recorder is not None:
+        SCons.Diagnostics.recorder.exit_code = exit_status
+    # wgodot-changes::end
 
     sys.exit(exit_status)

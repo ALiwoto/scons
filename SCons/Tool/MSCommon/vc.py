@@ -55,6 +55,9 @@ from functools import cmp_to_key
 import enum
 
 import SCons.Util
+# wgodot-changes::begin
+import SCons.Diagnostics
+# wgodot-changes::end
 import SCons.Warnings
 from SCons.Tool import find_program_path
 
@@ -2268,6 +2271,9 @@ def _check_cl_exists_in_script_env(data):
 
 script_env_cache = None
 
+# wgodot-changes::begin
+@SCons.Diagnostics.measure
+# wgodot-changes::end
 def script_env(env, script, args=None):
     global script_env_cache
 
@@ -2275,6 +2281,10 @@ def script_env(env, script, args=None):
         script_env_cache = common.read_script_env_cache()
     cache_key = (script, args if args else None)
     cache_data = script_env_cache.get(cache_key, None)
+    # wgodot-changes::begin
+    if SCons.Diagnostics.recorder is not None:
+        SCons.Diagnostics.recorder.note('msvc_script', script=script, arguments=args, cached=cache_data is not None)
+    # wgodot-changes::end
 
     # Brief sanity check: if we got a value for the key,
     # see if it has a VCToolsInstallDir entry that is not empty.
@@ -2379,6 +2389,9 @@ def msvc_setup_env_once(env, tool=None) -> None:
               "  Requested tool(s) are: {}".format(req_tools)
         MSVC.Policy.msvc_notfound_handler(env, msg)
 
+# wgodot-changes::begin
+@SCons.Diagnostics.measure
+# wgodot-changes::end
 def msvc_find_valid_batch_script(env, version):
     """Find and execute appropriate batch script to set up build env.
 
@@ -2542,8 +2555,20 @@ def get_use_script_use_settings(env):
     # use script undefined, use_settings undefined or None
     return True, None
 
+# wgodot-changes::begin
+@SCons.Diagnostics.measure
+# wgodot-changes::end
 def msvc_setup_env(env):
     debug('called')
+    # wgodot-changes::begin
+    if SCons.Diagnostics.recorder is not None:
+        import traceback
+        SCons.Diagnostics.recorder.note(
+            'msvc_setup', target_arch=env.get('TARGET_ARCH'),
+            sdk=env.get('MSVC_SDK_VERSION'), version=env.get('MSVC_VERSION'),
+            callers=[f'{frame.filename}:{frame.lineno}:{frame.name}' for frame in traceback.extract_stack(limit=14)[:-1]],
+        )
+    # wgodot-changes::end
 
     _VSWhereExecutable.vswhere_freeze_env(env)
 

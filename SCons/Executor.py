@@ -33,6 +33,9 @@ import SCons.Memoize
 import SCons.Util
 from SCons.compat import NoSlotsPyPy
 import SCons.Debug
+# wgodot-changes::begin
+import SCons.Diagnostics
+# wgodot-changes::end
 from SCons.Debug import logInstanceCreation
 
 class Batch:
@@ -508,6 +511,9 @@ class Executor(metaclass=NoSlotsPyPy):
         if self.batches[0].sources:
             self.scan(scanner, self.get_all_sources())
 
+    # wgodot-changes::begin
+    @SCons.Diagnostics.measure
+    # wgodot-changes::end
     def scan(self, scanner, node_list) -> None:
         """Scan a list of this Executor's files (targets or sources) for
         implicit dependencies and update all of the targets with them.
@@ -567,6 +573,9 @@ class Executor(metaclass=NoSlotsPyPy):
 
         return sourcelist
 
+    # wgodot-changes::begin
+    @SCons.Diagnostics.measure
+    # wgodot-changes::end
     def get_implicit_deps(self):
         """Return the executor's implicit dependencies, i.e. the nodes of
         the commands to be executed."""

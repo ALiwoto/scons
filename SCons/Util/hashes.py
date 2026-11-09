@@ -11,6 +11,9 @@ Routines for working with content and signature hashes.
 from __future__ import annotations
 
 import hashlib
+# wgodot-changes::begin
+import SCons.Diagnostics
+# wgodot-changes::end
 import sys
 
 from .sctypes import to_bytes
@@ -297,6 +300,9 @@ def _get_hash_object(hash_format, hashlib_used=hashlib, sys_used=sys):
     )
 
 
+# wgodot-changes::begin
+@SCons.Diagnostics.measure
+# wgodot-changes::end
 def hash_signature(s, hash_format=None):
     """
     Generate hash signature of a string
@@ -317,6 +323,9 @@ def hash_signature(s, hash_format=None):
     return m.hexdigest()
 
 
+# wgodot-changes::begin
+@SCons.Diagnostics.measure
+# wgodot-changes::end
 def hash_file_signature(fname: str, chunksize: int=65536, hash_format=None) -> str:
     """Generate the md5 signature of a file
 

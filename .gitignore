@@ -56,3 +56,6 @@ htmlcov
 
 # SCons specific
 *.1
+
+
+*.log

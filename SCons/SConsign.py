@@ -30,6 +30,9 @@ import pickle
 import time
 
 import SCons.dblite
+# wgodot-changes::begin
+import SCons.Diagnostics
+# wgodot-changes::end
 import SCons.Warnings
 from SCons.compat import PICKLE_PROTOCOL
 from SCons.Util import print_time
@@ -116,6 +119,9 @@ def Reset() -> None:
 normcase = os.path.normcase
 
 
+# wgodot-changes::begin
+@SCons.Diagnostics.measure
+# wgodot-changes::end
 def write() -> None:
     if print_time():
         start_time = time.perf_counter()
@@ -245,6 +251,9 @@ class DB(Base):
     from a global .sconsign.db* file--the actual file suffix is
     determined by the database module.
     """
+    # wgodot-changes::begin
+    @SCons.Diagnostics.measure
+    # wgodot-changes::end
     def __init__(self, dir) -> None:
         super().__init__()
 

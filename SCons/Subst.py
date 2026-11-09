@@ -32,6 +32,9 @@ from functools import lru_cache
 from inspect import Parameter, signature
 
 import SCons.Errors
+# wgodot-changes::begin
+import SCons.Diagnostics
+# wgodot-changes::end
 import SCons.Util
 from SCons.Util import is_Sequence, is_String
 
@@ -900,6 +903,9 @@ _unexpandable = re.compile(r'[\s$]')
 _space_sep = re.compile(r'[\t ]+(?![^{]*})')
 
 
+# wgodot-changes::begin
+@SCons.Diagnostics.measure
+# wgodot-changes::end
 def scons_subst(
     strSubst,
     env,
@@ -999,6 +1005,9 @@ def scons_subst(
 
     return result
 
+# wgodot-changes::begin
+@SCons.Diagnostics.measure
+# wgodot-changes::end
 def scons_subst_list(
     strSubst,
     env,

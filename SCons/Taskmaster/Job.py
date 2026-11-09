@@ -38,6 +38,9 @@ import threading
 from enum import Enum
 
 import SCons.Errors
+# wgodot-changes::begin
+import SCons.Diagnostics
+# wgodot-changes::end
 import SCons.Warnings
 
 
@@ -295,6 +298,9 @@ class Parallel:
         if prev_size is not None:
             threading.stack_size(prev_size)
 
+    # wgodot-changes::begin
+    @SCons.Diagnostics.measure
+    # wgodot-changes::end
     def _work(self):
 
         task = None

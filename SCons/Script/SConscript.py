@@ -29,6 +29,9 @@ import SCons
 import SCons.Action
 import SCons.Builder
 import SCons.Defaults
+# wgodot-changes::begin
+import SCons.Diagnostics
+# wgodot-changes::end
 import SCons.Environment
 import SCons.Errors
 import SCons.Node
@@ -177,6 +180,9 @@ def handle_missing_SConscript(f: FileNode, must_exist: bool = True) -> None:
     raise SCons.Errors.UserError(msg)
 
 
+# wgodot-changes::begin
+@SCons.Diagnostics.measure
+# wgodot-changes::end
 def _SConscript(fs: FS, *files: str | Node, **kw) -> Any | list[Any]:
     top = fs.Top
     sd = fs.SConstruct_dir.rdir()

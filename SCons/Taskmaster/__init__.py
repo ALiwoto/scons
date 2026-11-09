@@ -53,6 +53,9 @@ from itertools import chain
 import logging
 
 import SCons.Errors
+# wgodot-changes::begin
+import SCons.Diagnostics
+# wgodot-changes::end
 import SCons.Node
 import SCons.Warnings
 from SCons.Util import DispatchingFormatter
@@ -384,6 +387,9 @@ class Task(ABC):
                 # add disambiguate here to mirror the call on targets above
                 s.disambiguate().set_state(NODE_EXECUTING)
 
+    # wgodot-changes::begin
+    @SCons.Diagnostics.measure
+    # wgodot-changes::end
     def make_ready_current(self):
         """
         Marks all targets in a task ready for execution if any target
@@ -1012,6 +1018,9 @@ class Taskmaster:
 
         return None
 
+    # wgodot-changes::begin
+    @SCons.Diagnostics.measure
+    # wgodot-changes::end
     def next_task(self):
         """
         Returns the next task to be executed.

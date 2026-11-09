@@ -49,6 +49,9 @@ from itertools import chain, zip_longest
 from typing import Any, TYPE_CHECKING
 
 import SCons.Debug
+# wgodot-changes::begin
+import SCons.Diagnostics
+# wgodot-changes::end
 import SCons.Executor
 import SCons.Memoize
 from SCons.compat import NoSlotsPyPy
@@ -216,6 +219,9 @@ def get_contents_dir(node):
         contents.append('%s %s\n' % (n.get_csig(), n.name))
     return ''.join(contents)
 
+# wgodot-changes::begin
+@SCons.Diagnostics.measure
+# wgodot-changes::end
 def get_contents_file(node) -> bytes:
     if not node.rexists():
         return b''
@@ -1469,6 +1475,9 @@ class Node(metaclass=NoSlotsPyPy):
             return None
         return self._tags.get(key, None)
 
+    # wgodot-changes::begin
+    @SCons.Diagnostics.measure
+    # wgodot-changes::end
     def changed(self, node: Node | None = None, allowcache: bool = False) -> bool:
         """
         Returns if the node is up-to-date with respect to the BuildInfo

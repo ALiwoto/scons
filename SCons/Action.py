@@ -114,6 +114,9 @@ from subprocess import DEVNULL, PIPE
 from typing import TYPE_CHECKING
 
 import SCons.Debug
+# wgodot-changes::begin
+import SCons.Diagnostics
+# wgodot-changes::end
 import SCons.Errors
 import SCons.Subst
 import SCons.Util
@@ -1040,6 +1043,9 @@ class CommandAction(_ActionAction):
             return ''
         return _string_from_cmd_list(cmd_list[0])
 
+    # wgodot-changes::begin
+    @SCons.Diagnostics.measure
+    # wgodot-changes::end
     def execute(self, target, source, env, executor: Executor | None = None):
         """Execute a command action.
 
@@ -1093,7 +1099,16 @@ class CommandAction(_ActionAction):
         for cmd_line in filter(len, cmd_list):
             # Escape the command line for the interpreter we are using.
             cmd_line = escape_list(cmd_line, escape)
-            result = spawn(shell, escape, cmd_line[0], cmd_line, ENV)
+            # wgodot-changes::begin
+            if SCons.Diagnostics.recorder is None:
+                result = spawn(shell, escape, cmd_line[0], cmd_line, ENV)
+            else:
+                result = SCons.Diagnostics.recorder.run(
+                    'command', list(map(str, target)), list(map(str, source)), str(cmd_line[0]),
+                    list(map(str, cmd_line)),
+                    spawn, shell, escape, cmd_line[0], cmd_line, ENV,
+                )
+            # wgodot-changes::end
             if not ignore and result:
                 msg = "Error %s" % result
                 return SCons.Errors.BuildError(errstr=msg,
@@ -1139,6 +1154,9 @@ class CommandAction(_ActionAction):
         # lightweight dependency scanning.
         return self._get_implicit_deps_lightweight(target, source, env, executor)
 
+    # wgodot-changes::begin
+    @SCons.Diagnostics.measure
+    # wgodot-changes::end
     def _get_implicit_deps_lightweight(self, target, source, env, executor: Executor | None):
         """
         Lightweight dependency scanning involves only scanning the first entry
@@ -1428,6 +1446,9 @@ class FunctionAction(_ActionAction):
         """ Added so FunctionAction can be used as a key in a dict and/or cached. """
         return id(self)
 
+    # wgodot-changes::begin
+    @SCons.Diagnostics.measure
+    # wgodot-changes::end
     def execute(self, target, source, env, executor: Executor | None = None):
         exc_info = (None,None,None)
         try:
@@ -1436,7 +1457,16 @@ class FunctionAction(_ActionAction):
                 source = executor.get_all_sources()
             rsources = list(map(rfile, source))
             try:
-                result = self.execfunction(target=target, source=rsources, env=env)
+                # wgodot-changes::begin
+                if SCons.Diagnostics.recorder is None:
+                    result = self.execfunction(target=target, source=rsources, env=env)
+                else:
+                    result = SCons.Diagnostics.recorder.run(
+                        'function', list(map(str, target)), list(map(str, rsources)),
+                        self.function_name(), [], self.execfunction,
+                        target=target, source=rsources, env=env,
+                    )
+                # wgodot-changes::end
             except (KeyboardInterrupt, SystemExit):
                 raise
             except Exception as e:
